@@ -25,6 +25,35 @@ The project is developed using the latest .NET 6.0 framework, ensuring compatibi
 
 Designed to work seamlessly in serverless environments, the S3 Image Resizer is well-suited for cloud-based deployments. It can efficiently scale based on demand and handle image resizing without the need for a dedicated server.
 
+
+## Infrastructure
+
+![infra.png](docs%2Finfra.png)
+
+
+## Setup
+Open your S3 bucket in the AWS Management Console and navigate to the "Properties" tab. In the "Static website hosting" section, update the error document configuration with the following JSON:
+
+```json
+
+[
+   {
+      "Condition": {
+         "HttpErrorCodeReturnedEquals": "404"
+      },
+      "Redirect": {
+         "HostName": "{GENERATED_API_GATEWAY_ID}.execute-api.{AWS_REGION}.amazonaws.com",
+         "HttpRedirectCode": "307",
+         "Protocol": "https",
+         "ReplaceKeyPrefixWith": "prod/resized-images?path="
+      }
+   }
+]
+```
+
+![s3-settings.png](docs%2Fs3-settings.png)
+
+
 ## Deployment with AWS CloudFormation
 
 1. **Clone the Repository:**
@@ -38,7 +67,7 @@ Designed to work seamlessly in serverless environments, the S3 Image Resizer is 
 3. **Deploy with AWS CloudFormation:**
    Use the provided CloudFormation template (`s3-image-resizer-template.yaml`) to automate the setup of your S3 Image Resizer. Replace `<YOUR-BUCKET-NAME>` with the desired S3 bucket name.
    ```bash
-   aws cloudformation deploy --template-file s3-image-resizer-template.yaml --stack-name S3ImageResizerStack --parameter-overrides ImageResizerBucketName=<YOUR-BUCKET-NAME>
+   aws cloudformation deploy --template-file s3-image-resizer-template.yaml --stack-name S3ImageResizerStack --parameter-overrides BucketName=<YOUR-BUCKET-NAME> BucketProxyUrl=<YOUR-BUCKET-PROXY-URL> AllowedResolutions=<YOUR-ALLOWED-RESOLUTIONS> Prefix=<YOUR-PREFIX> CodeBucketName=<YOUR-CODE-BUCKET-NAME>
    ```
 
 4. **Configure S3 Access:**
@@ -53,7 +82,7 @@ Designed to work seamlessly in serverless environments, the S3 Image Resizer is 
 
 ## Contributing
 
-If you would like to contribute to the project or report issues, please check the [contribution guidelines](CONTRIBUTING.md).
+If you would like to contribute to the project or report issues, you can do so by creating a pull request or opening an issue.
 
 ## License
 
